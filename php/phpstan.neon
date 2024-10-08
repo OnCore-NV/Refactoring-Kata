@@ -1,0 +1,34 @@
+includes:
+    - vendor/symplify/phpstan-extensions/config/config.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+    paths:
+        - src
+        - tests
+
+    # max is the highest level
+    level: max
+
+    # Ignore Enum classes:
+    excludePaths:
+        - src\Model\SpecialOfferType.php
+        - src\Model\ProductUnit.php
+
+    ignoreErrors:
+        # Magic method is used is simulate enum
+        - '#Call to an undefined static method#'
+        -
+            message: "#^Property Tests\\\\FakeCatalog\\:\\:\\$products is never read, only written\\.$#"
+            count: 1
+            path: tests/FakeCatalog.php
+
+    # buggy
+
+    # mixed
+
+    # cache buggy
+
+    # tests
+
+    # iterable
