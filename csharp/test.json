@@ -1,0 +1,89 @@
+{
+    "recipe": {
+        "name": "Lasagna",
+        "ingredients": [
+            {
+                "name": "Lasagna noodles",
+                "quantity": "12",
+                "unit": "pieces"
+            },
+            {
+                "name": "Ground beef",
+                "quantity": "1",
+                "unit": "pound"
+            },
+            {
+                "name": "Onion",
+                "quantity": "1",
+                "unit": "medium, chopped"
+            },
+            {
+                "name": "Garlic",
+                "quantity": "2",
+                "unit": "cloves, minced"
+            },
+            {
+                "name": "Tomato sauce",
+                "quantity": "24",
+                "unit": "ounces"
+            },
+            {
+                "name": "Tomato paste",
+                "quantity": "6",
+                "unit": "ounces"
+            },
+            {
+                "name": "Ricotta cheese",
+                "quantity": "15",
+                "unit": "ounces"
+            },
+            {
+                "name": "Egg",
+                "quantity": "1",
+                "unit": "large"
+            },
+            {
+                "name": "Mozzarella cheese",
+                "quantity": "16",
+                "unit": "ounces, shredded"
+            },
+            {
+                "name": "Parmesan cheese",
+                "quantity": "3/4",
+                "unit": "cup, grated"
+            },
+            {
+                "name": "Salt",
+                "quantity": "1",
+                "unit": "teaspoon"
+            },
+            {
+                "name": "Black pepper",
+                "quantity": "1/2",
+                "unit": "teaspoon"
+            },
+            {
+                "name": "Dried basil",
+                "quantity": "1",
+                "unit": "teaspoon"
+            },
+            {
+                "name": "Dried oregano",
+                "quantity": "1",
+                "unit": "teaspoon"
+            }
+        ],
+        "instructions": [
+            "Preheat oven to 375°F (190°C).",
+            "Cook lasagna noodles according to package instructions. Drain and set aside.",
+            "In a large skillet, cook ground beef, onion, and garlic over medium heat until meat is browned. Drain excess fat.",
+            "Stir in tomato sauce and tomato paste. Season with salt, pepper, basil, and oregano. Simmer for 15 minutes.",
+            "In a mixing bowl, combine ricotta cheese, egg, and 1/2 cup of Parmesan cheese.",
+            "Spread a thin layer of meat sauce in the bottom of a 9x13 inch baking dish.",
+            "Layer with 1/3 of the lasagna noodles, 1/3 of the ricotta mixture, 1/3 of the mozzarella cheese, and 1/3 of the meat sauce. Repeat layers twice more.",
+            "Top with remaining mozzarella and Parmesan cheese.",
+            "Cover with aluminum foil and bake in preheated oven for 25 minutes. Remove foil and bake for an additional 25 minutes, or until cheese is bubbly and slightly browned.",
+            "Let stand for 10 minutes before serving."
+        ]
+    }
+}

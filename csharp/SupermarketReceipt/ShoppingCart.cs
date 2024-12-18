@@ -3,13 +3,13 @@ using System.Globalization;
 
 namespace SupermarketReceipt
 {
+    
     public class ShoppingCart
     {
         private readonly List<ProductQuantity> _items = new List<ProductQuantity>();
         private readonly Dictionary<Product, double> _productQuantities = new Dictionary<Product, double>();
         private static readonly CultureInfo Culture = CultureInfo.CreateSpecificCulture("en-GB");
-
-
+        
         public List<ProductQuantity> GetItems()
         {
             return new List<ProductQuantity>(_items);
@@ -23,16 +23,15 @@ namespace SupermarketReceipt
 
         public void AddItemQuantity(Product product, double quantity)
         {
-            _items.Add(new ProductQuantity(product, quantity));
             if (_productQuantities.ContainsKey(product))
             {
-                var newAmount = _productQuantities[product] + quantity;
-                _productQuantities[product] = newAmount;
+                _productQuantities[product] += quantity;
             }
             else
             {
-                _productQuantities.Add(product, quantity);
+                _productQuantities[product] = quantity;
             }
+            _items.Add(new ProductQuantity(product, quantity));
         }
 
         public void HandleOffers(Receipt receipt, Dictionary<Product, Offer> offers, SupermarketCatalog catalog)
