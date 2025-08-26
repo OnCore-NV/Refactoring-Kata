@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/sample_test_gtest.dir/link.d CMakeFiles/sample_test_gtest.dir/main.cpp.o CMakeFiles/sample_test_gtest.dir/supermarket_gtest.cpp.o -o sample_test_gtest  ../src/libsrc.a ../lib/libgtest.a ../_deps/approvaltests-build/ApprovalTests/libApprovalTests.a
