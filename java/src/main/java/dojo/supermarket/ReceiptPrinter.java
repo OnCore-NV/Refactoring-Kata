@@ -4,7 +4,7 @@ import dojo.supermarket.model.*;
 
 import java.util.Locale;
 
-public class ReceiptPrinter {
+public class ReceiptPrinter extends BaseReceiptPrinter {
 
     private final int columns;
 
@@ -16,20 +16,36 @@ public class ReceiptPrinter {
         this.columns = columns;
     }
 
+    @Override
     public String printReceipt(Receipt receipt) {
         StringBuilder result = new StringBuilder();
         for (ReceiptItem item : receipt.getItems()) {
-            String receiptItem = presentReceiptItem(item);
+            String receiptItem = formatReceiptItem(item);
             result.append(receiptItem);
         }
         for (Discount discount : receipt.getDiscounts()) {
-            String discountPresentation = presentDiscount(discount);
+            String discountPresentation = formatDiscount(discount);
             result.append(discountPresentation);
         }
 
         result.append("\n");
-        result.append(presentTotal(receipt));
+        result.append(formatTotal(receipt));
         return result.toString();
+    }
+
+    @Override
+    protected String formatReceiptItem(ReceiptItem item) {
+        return presentReceiptItem(item);
+    }
+
+    @Override
+    protected String formatDiscount(Discount discount) {
+        return presentDiscount(discount);
+    }
+
+    @Override
+    protected String formatTotal(Receipt receipt) {
+        return presentTotal(receipt);
     }
 
     private String presentReceiptItem(ReceiptItem item) {
@@ -69,13 +85,11 @@ public class ReceiptPrinter {
         return line.toString();
     }
 
-    private static String presentPrice(double price) {
-        return String.format(Locale.UK, "%.2f", price);
+    protected static String presentPrice(double price) {
+        return BaseReceiptPrinter.presentPrice(price);
     }
 
-    private static String presentQuantity(ReceiptItem item) {
-        return ProductUnit.EACH.equals(item.getProduct().getUnit())
-                ? String.format("%d", (int)item.getQuantity())
-                : String.format(Locale.UK, "%.3f", item.getQuantity());
+    protected static String presentQuantity(ReceiptItem item) {
+        return BaseReceiptPrinter.presentQuantity(item);
     }
 }
