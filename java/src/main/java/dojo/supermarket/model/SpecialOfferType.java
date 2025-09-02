@@ -5,4 +5,5 @@ public enum SpecialOfferType {
     TEN_PERCENT_DISCOUNT,
     TWO_FOR_AMOUNT,
     FIVE_FOR_AMOUNT,
+    BUNDLE,
 }

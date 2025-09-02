@@ -72,4 +72,40 @@ public class ShoppingCart {
             }
         }
     }
+
+    void handleBundleOffers(Receipt receipt, List<BundleOffer> bundleOffers, SupermarketCatalog catalog) {
+        for (BundleOffer bundleOffer : bundleOffers) {
+            // Calculate how many complete bundles can be made
+            int completeBundles = calculateCompleteBundles(bundleOffer.getProducts());
+            
+            if (completeBundles > 0) {
+                // Calculate total price for one complete bundle
+                double bundlePrice = 0.0;
+                for (Product product : bundleOffer.getProducts()) {
+                    bundlePrice += catalog.getUnitPrice(product);
+                }
+                
+                // Calculate discount for all complete bundles
+                double totalBundlePrice = bundlePrice * completeBundles;
+                double discountAmount = totalBundlePrice * bundleOffer.getDiscountPercent() / 100.0;
+                
+                // Create bundle discount
+                String description = "Bundle discount (" + bundleOffer.getDiscountPercent() + "% off)";
+                Discount bundleDiscount = new Discount(bundleOffer.getProducts().get(0), description, -discountAmount);
+                receipt.addDiscount(bundleDiscount);
+            }
+        }
+    }
+
+    private int calculateCompleteBundles(List<Product> bundleProducts) {
+        int minQuantity = Integer.MAX_VALUE;
+        
+        for (Product product : bundleProducts) {
+            double quantity = productQuantities.getOrDefault(product, 0.0);
+            int quantityAsInt = (int) quantity;
+            minQuantity = Math.min(minQuantity, quantityAsInt);
+        }
+        
+        return minQuantity == Integer.MAX_VALUE ? 0 : minQuantity;
+    }
 }
