@@ -27,7 +27,7 @@ class SupermarketTest {
         cart.addItemQuantity(apples, 2.5);
         
         // ACT
-        Receipt receipt = teller.checksOutArticlesFrom(cart);
+        Receipt receipt = teller.checkoutCart(cart);
 
         // ASSERT
         assertEquals(4.975, receipt.getTotalPrice(), 0.01);

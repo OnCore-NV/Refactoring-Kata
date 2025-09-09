@@ -33,39 +33,39 @@ public class ShoppingCart {
     }
 
     void handleOffers(Receipt receipt, Map<Product, Offer> offers, SupermarketCatalog catalog) {
-        for (Product p: productQuantities().keySet()) {
-            double quantity = productQuantities.get(p);
-            if (offers.containsKey(p)) {
-                Offer offer = offers.get(p);
-                double unitPrice = catalog.getUnitPrice(p);
+        for (Product product: productQuantities().keySet()) {
+            double quantity = productQuantities.get(product);
+            if (offers.containsKey(product)) {
+                Offer offer = offers.get(product);
+                double unitPrice = catalog.getUnitPrice(product);
                 int quantityAsInt = (int) quantity;
                 Discount discount = null;
-                int x = 1;
+                int itemsPerDeal = 1;
                 if (offer.offerType == SpecialOfferType.THREE_FOR_TWO) {
-                    x = 3;
+                    itemsPerDeal = 3;
 
                 } else if (offer.offerType == SpecialOfferType.TWO_FOR_AMOUNT) {
-                    x = 2;
+                    itemsPerDeal = 2;
                     if (quantityAsInt >= 2) {
-                        double total = offer.argument * (quantityAsInt / x) + quantityAsInt % 2 * unitPrice;
-                        double discountN = unitPrice * quantity - total;
-                        discount = new Discount(p, "2 for " + offer.argument, -discountN);
+                        double total = offer.argument * (quantityAsInt / itemsPerDeal) + quantityAsInt % 2 * unitPrice;
+                        double discountAmount = unitPrice * quantity - total;
+                        discount = new Discount(product, "2 for " + offer.argument, -discountAmount);
                     }
 
                 } if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT) {
-                    x = 5;
+                    itemsPerDeal = 5;
                 }
-                int numberOfXs = quantityAsInt / x;
+                int numberOfCompleteDeals = quantityAsInt / itemsPerDeal;
                 if (offer.offerType == SpecialOfferType.THREE_FOR_TWO && quantityAsInt > 2) {
-                    double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                    discount = new Discount(p, "3 for 2", -discountAmount);
+                    double discountAmount = quantity * unitPrice - ((numberOfCompleteDeals * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
+                    discount = new Discount(product, "3 for 2", -discountAmount);
                 }
                 if (offer.offerType == SpecialOfferType.TEN_PERCENT_DISCOUNT) {
-                    discount = new Discount(p, offer.argument + "% off", -quantity * unitPrice * offer.argument / 100.0);
+                    discount = new Discount(product, offer.argument + "% off", -quantity * unitPrice * offer.argument / 100.0);
                 }
                 if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT && quantityAsInt >= 5) {
-                    double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-                    discount = new Discount(p, x + " for " + offer.argument, -discountTotal);
+                    double totalDiscountAmount = unitPrice * quantity - (offer.argument * numberOfCompleteDeals + quantityAsInt % 5 * unitPrice);
+                    discount = new Discount(product, itemsPerDeal + " for " + offer.argument, -totalDiscountAmount);
                 }
                 if (discount != null)
                     receipt.addDiscount(discount);
