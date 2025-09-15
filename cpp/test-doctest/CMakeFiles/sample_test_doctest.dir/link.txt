@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/sample_test_doctest.dir/link.d CMakeFiles/sample_test_doctest.dir/main.cpp.o CMakeFiles/sample_test_doctest.dir/sample_doctest.cpp.o -o sample_test_doctest  ../src/libsrc.a ../_deps/approvaltests-build/ApprovalTests/libApprovalTests.a

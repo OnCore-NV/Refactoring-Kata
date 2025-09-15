@@ -9,9 +9,16 @@
 
 class ReceiptPrinter
 {
+private:
+    // Receipt formatting constants
+    static constexpr int DEFAULT_COLUMN_WIDTH = 40;
+    static constexpr int PRICE_DECIMAL_PLACES = 2;
+    static constexpr int WHOLE_QUANTITY_DECIMAL_PLACES = 0;
+    static constexpr int FRACTIONAL_QUANTITY_DECIMAL_PLACES = 3;
+    static constexpr int DEFAULT_ITEM_QUANTITY = 1;
 
 public:
-    ReceiptPrinter() : ReceiptPrinter(40)
+    ReceiptPrinter() : ReceiptPrinter(DEFAULT_COLUMN_WIDTH)
     {
     }
 
@@ -36,14 +43,14 @@ public:
 
     std::string presentReceiptItem(const ReceiptItem &item) const
     {
-        std::string price = getFormattedNumberAsString(item.getTotalPrice(), 2);
+        std::string price = getFormattedNumberAsString(item.getTotalPrice(), PRICE_DECIMAL_PLACES);
         std::string name = item.getProduct().getName();
 
         std::string line = formatLineWithWhitespace(name, price);
 
-        if (item.getQuantity() != 1)
+        if (item.getQuantity() != DEFAULT_ITEM_QUANTITY)
         {
-            line += "  " + getFormattedNumberAsString(item.getPrice(), 2) + " * " + presentQuantity(item) + "\n";
+            line += "  " + getFormattedNumberAsString(item.getPrice(), PRICE_DECIMAL_PLACES) + " * " + presentQuantity(item) + "\n";
         }
         return line;
     }
@@ -51,7 +58,7 @@ public:
     std::string presentDiscount(const Discount &discount) const
     {
         std::string name = discount.getDescription() + "(" + discount.getProduct().getName() + ")";
-        std::string pricePresentation = getFormattedNumberAsString(discount.getDiscountAmount(), 2);
+        std::string pricePresentation = getFormattedNumberAsString(discount.getDiscountAmount(), PRICE_DECIMAL_PLACES);
         return formatLineWithWhitespace(name, pricePresentation);
     }
 
@@ -74,13 +81,13 @@ public:
     }
 
     std::string presentPrice(double price) const
-    { return getFormattedNumberAsString(price, 2); }
+    { return getFormattedNumberAsString(price, PRICE_DECIMAL_PLACES); }
 
     static std::string presentQuantity(const ReceiptItem &item)
     {
         return ProductUnit::Each == item.getProduct().getUnit()
-               ? getFormattedNumberAsString(item.getQuantity(), 0)
-               : getFormattedNumberAsString(item.getQuantity(), 3);
+               ? getFormattedNumberAsString(item.getQuantity(), WHOLE_QUANTITY_DECIMAL_PLACES)
+               : getFormattedNumberAsString(item.getQuantity(), FRACTIONAL_QUANTITY_DECIMAL_PLACES);
     }
 
 private:
