@@ -1,0 +1,3 @@
+/home/runner/work/Refactoring-Kata/Refactoring-Kata/cpp/_deps/approvaltests-subbuild/CMakeFiles/approvaltests-populate.dir
+/home/runner/work/Refactoring-Kata/Refactoring-Kata/cpp/_deps/approvaltests-subbuild/CMakeFiles/edit_cache.dir
+/home/runner/work/Refactoring-Kata/Refactoring-Kata/cpp/_deps/approvaltests-subbuild/CMakeFiles/rebuild_cache.dir

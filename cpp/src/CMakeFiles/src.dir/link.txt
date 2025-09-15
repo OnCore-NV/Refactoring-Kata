@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsrc.a CMakeFiles/src.dir/Discount.cpp.o CMakeFiles/src.dir/Product.cpp.o CMakeFiles/src.dir/Offer.cpp.o CMakeFiles/src.dir/ProductQuantity.cpp.o CMakeFiles/src.dir/ReceiptItem.cpp.o CMakeFiles/src.dir/Receipt.cpp.o CMakeFiles/src.dir/ShoppingCart.cpp.o CMakeFiles/src.dir/Teller.cpp.o CMakeFiles/src.dir/ReceiptPrinter.cpp.o CMakeFiles/src.dir/FakeCatalog.cpp.o
+/usr/bin/ranlib libsrc.a
