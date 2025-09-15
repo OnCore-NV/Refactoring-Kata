@@ -20,3 +20,6 @@ build/
 **/*.o
 **/*.d
 **/sample_test_*
+
+# C build artifacts
+**/*.a
