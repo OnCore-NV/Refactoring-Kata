@@ -8,3 +8,18 @@ out/
 build/
 .gradle/
 .DS_Store
+
+# C++ build artifacts
+**/CMakeCache.txt
+**/CMakeFiles/
+**/Makefile
+**/cmake_install.cmake
+**/CTestTestfile.cmake
+**/_deps/
+**/lib/
+**/*.o
+**/*.d
+**/sample_test_*
+
+# C build artifacts
+**/*.a

@@ -16,6 +16,14 @@ enum SpecialOfferType {
 #define MAX_NAME_LENGTH 100
 #define MAX_PRODUCTS 100
 
+// Special offer quantity constants
+#define TWO_FOR_OFFER_QUANTITY 2
+#define THREE_FOR_TWO_QUANTITY 3
+#define FIVE_FOR_OFFER_QUANTITY 5
+
+// Percentage conversion constant
+#define PERCENTAGE_DIVISOR 100.0
+
 struct product_t {
     char name[MAX_NAME_LENGTH];
     enum unit unit;
