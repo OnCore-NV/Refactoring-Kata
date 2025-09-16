@@ -2,3 +2,17 @@
 /subprojects/Catch2-*/
 /subprojects/packagecache/
 /cmake-build-*/
+
+# CMake build artifacts  
+CMakeCache.txt
+CMakeFiles/
+_deps/
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+
+# Binary files
+sample_test_catch2
+sample_test_gtest
+*.a
+*.o

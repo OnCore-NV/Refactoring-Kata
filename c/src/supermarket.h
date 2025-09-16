@@ -75,6 +75,13 @@ struct discount_t* discount_create(char* description, double discount, struct pr
 struct receipt_t* check_out_articles(struct teller_t* teller, struct cart_t* cart);
 double total_price(struct receipt_t* receipt);
 double unit_price(struct catalog_t* catalog, struct product_t *product);
+
+// Discount calculation functions
+struct discount_t* calculate_three_for_two_discount(struct product_t* product, double quantity, double unitPrice);
+struct discount_t* calculate_two_for_amount_discount(struct product_t* product, double quantity, double unitPrice, double amount);
+struct discount_t* calculate_ten_percent_discount(struct product_t* product, double quantity, double unitPrice, double percentage);
+struct discount_t* calculate_five_for_amount_discount(struct product_t* product, double quantity, double unitPrice, double amount);
+
 void handle_offers(struct cart_t* cart, struct receipt_t* receipt, struct special_offer_t* offer, struct catalog_t* catalog);
 
 #endif //SAMPLE_H
