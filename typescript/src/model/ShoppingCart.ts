@@ -6,6 +6,7 @@ import {Discount} from "./Discount"
 import {Receipt} from "./Receipt"
 import {Offer} from "./Offer"
 import {SpecialOfferType} from "./SpecialOfferType"
+import {BundleOffer} from "./BundleOffer"
 
 type ProductQuantities = { [productName: string]: ProductQuantity }
 export type OffersByProduct = {[productName: string]: Offer};
@@ -86,6 +87,44 @@ export class ShoppingCart {
                     receipt.addDiscount(discount);
             }
 
+        }
+    }
+
+    handleBundleOffers(receipt: Receipt, bundleOffers: BundleOffer[], catalog: SupermarketCatalog): void {
+        for (const bundleOffer of bundleOffers) {
+            const bundle = bundleOffer.getBundle();
+            const bundleProducts = bundle.getProducts();
+            
+            // Calculate how many complete bundles we can make
+            let maxCompleteBundle = Number.MAX_SAFE_INTEGER;
+            
+            for (const bundleProduct of bundleProducts) {
+                const productQuantity = this._productQuantities[bundleProduct.name];
+                if (!productQuantity) {
+                    maxCompleteBundle = 0;
+                    break;
+                }
+                maxCompleteBundle = Math.min(maxCompleteBundle, Math.floor(productQuantity.quantity));
+            }
+            
+            if (maxCompleteBundle > 0) {
+                // Calculate discount for complete bundles
+                let bundleTotal = 0;
+                for (const bundleProduct of bundleProducts) {
+                    const unitPrice = catalog.getUnitPrice(bundleProduct);
+                    bundleTotal += unitPrice * maxCompleteBundle;
+                }
+                
+                const discountAmount = bundleTotal * (bundleOffer.discountPercentage / 100.0);
+                
+                // Create a discount with the first product in the bundle as representative
+                const discount = new Discount(
+                    bundleProducts[0], 
+                    `Bundle discount (${bundleOffer.discountPercentage}% off)`, 
+                    discountAmount
+                );
+                receipt.addDiscount(discount);
+            }
         }
     }
 }
