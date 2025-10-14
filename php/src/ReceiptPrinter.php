@@ -11,8 +11,26 @@ use Supermarket\Model\ReceiptItem;
 
 class ReceiptPrinter
 {
+    // Constants for receipt formatting
+    private const DEFAULT_COLUMNS = 40;
+    private const QUANTITY_THRESHOLD = 1.0;
+    private const PRICE_DECIMAL_PLACES = 2;
+    private const WEIGHT_DECIMAL_PLACES = 3;
+    
+    // Format strings
+    private const PRICE_FORMAT = '%.2F';
+    private const WEIGHT_FORMAT = '%.3F';
+    private const INTEGER_FORMAT = '%d';
+    
+    // Display strings
+    private const UNIT_PRICE_INDENT = '  ';
+    private const MULTIPLICATION_SYMBOL = ' * ';
+    private const TOTAL_LABEL = 'Total: ';
+    private const WHITESPACE_CHAR = ' ';
+    private const NEWLINE = "\n";
+
     public function __construct(
-        private int $columns = 40
+        private int $columns = self::DEFAULT_COLUMNS
     ) {
     }
 
@@ -29,7 +47,7 @@ class ReceiptPrinter
             $result .= $discountPresentation;
         }
 
-        $result .= "\n";
+        $result .= self::NEWLINE;
         $result .= $this->presentTotal($receipt);
         return $result;
     }
@@ -39,10 +57,10 @@ class ReceiptPrinter
         $price = self::presentPrice($item->getTotalPrice());
         $name = $item->getProduct()->getName();
 
-        $line = $this->formatLineWithWhitespace($name, $price) . "\n";
+        $line = $this->formatLineWithWhitespace($name, $price) . self::NEWLINE;
 
-        if ($item->getQuantity() !== 1.0) {
-            $line .= '  ' . self::presentPrice($item->getPrice()) . ' * ' . self::presentQuantity($item) . "\n";
+        if ($item->getQuantity() !== self::QUANTITY_THRESHOLD) {
+            $line .= self::UNIT_PRICE_INDENT . self::presentPrice($item->getPrice()) . self::MULTIPLICATION_SYMBOL . self::presentQuantity($item) . self::NEWLINE;
         }
         return $line;
     }
@@ -52,12 +70,12 @@ class ReceiptPrinter
         $name = "{$discount->getDescription()}({$discount->getProduct()->getName()})";
         $value = self::presentPrice($discount->getDiscountAmount());
 
-        return $this->formatLineWithWhitespace($name, $value) . "\n";
+        return $this->formatLineWithWhitespace($name, $value) . self::NEWLINE;
     }
 
     protected function presentTotal(Receipt $receipt): string
     {
-        $name = 'Total: ';
+        $name = self::TOTAL_LABEL;
         $value = self::presentPrice($receipt->getTotalPrice());
         return $this->formatLineWithWhitespace($name, $value);
     }
@@ -65,18 +83,18 @@ class ReceiptPrinter
     protected function formatLineWithWhitespace(string $name, string $value): string
     {
         $whitespaceSize = $this->columns - strlen($name) - strlen($value);
-        return $name . str_repeat(' ', $whitespaceSize) . $value;
+        return $name . str_repeat(self::WHITESPACE_CHAR, $whitespaceSize) . $value;
     }
 
     protected static function presentPrice(float $price): string
     {
-        return sprintf('%.2F', $price);
+        return sprintf(self::PRICE_FORMAT, $price);
     }
 
     private static function presentQuantity(ReceiptItem $item): string
     {
         return $item->getProduct()->getUnit()->equals(ProductUnit::EACH()) ?
-            sprintf('%x', $item->getQuantity()) :
-            sprintf('%.3F', $item->getQuantity());
+            sprintf(self::INTEGER_FORMAT, $item->getQuantity()) :
+            sprintf(self::WEIGHT_FORMAT, $item->getQuantity());
     }
 }
