@@ -5,6 +5,19 @@ namespace SupermarketReceipt
 {
     public class ReceiptPrinter
     {
+        // Constants for receipt formatting
+        private const int DefaultColumns = 40;
+        private const int QuantityThreshold = 1;
+        private const int PriceDecimalPlaces = 2;
+        private const int WeightDecimalPlaces = 3;
+        
+        // Display strings
+        private const string UnitPriceIndent = "  ";
+        private const string MultiplicationSymbol = " * ";
+        private const string TotalLabel = "Total: ";
+        private const string WhitespaceChar = " ";
+        private const string Newline = "\n";
+        
         private static readonly CultureInfo Culture = CultureInfo.CreateSpecificCulture("en-GB");
 
         private readonly int _columns;
@@ -15,7 +28,7 @@ namespace SupermarketReceipt
             _columns = columns;
         }
 
-        public ReceiptPrinter() : this(40)
+        public ReceiptPrinter() : this(DefaultColumns)
         {
         }
 
@@ -36,7 +49,7 @@ namespace SupermarketReceipt
             }
 
             {
-                result.Append("\n");
+                result.Append(Newline);
                 result.Append(PrintTotal(receipt));
             }
             return result.ToString();
@@ -44,7 +57,7 @@ namespace SupermarketReceipt
 
         private string PrintTotal(Receipt receipt)
         {
-            string name = "Total: ";
+            string name = TotalLabel;
             string value = PrintPrice(receipt.GetTotalPrice());
             return FormatLineWithWhitespace(name, value);
         }
@@ -62,9 +75,9 @@ namespace SupermarketReceipt
             string totalPrice = PrintPrice(item.TotalPrice);
             string name = item.Product.Name;
             string line = FormatLineWithWhitespace(name, totalPrice);
-            if (item.Quantity != 1)
+            if (item.Quantity != QuantityThreshold)
             {
-                line += "  " + PrintPrice(item.Price) + " * " + PrintQuantity(item) + "\n";
+                line += UnitPriceIndent + PrintPrice(item.Price) + MultiplicationSymbol + PrintQuantity(item) + Newline;
             }
 
             return line;
@@ -77,23 +90,23 @@ namespace SupermarketReceipt
             line.Append(name);
             int whitespaceSize = this._columns - name.Length - value.Length;
             for (int i = 0; i < whitespaceSize; i++) {
-                line.Append(" ");
+                line.Append(WhitespaceChar);
             }
             line.Append(value);
-            line.Append('\n');
+            line.Append(Newline);
             return line.ToString();
         }
 
         private string PrintPrice(double price)
         {
-            return price.ToString("N2", Culture);
+            return price.ToString("N" + PriceDecimalPlaces, Culture);
         }
 
         private static string PrintQuantity(ReceiptItem item)
         {
             return ProductUnit.Each == item.Product.Unit
                 ? ((int) item.Quantity).ToString()
-                : item.Quantity.ToString("N3", Culture);
+                : item.Quantity.ToString("N" + WeightDecimalPlaces, Culture);
         }
         
     }

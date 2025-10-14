@@ -1,6 +1,22 @@
 public class ReceiptPrinter {
-
-    private var columns: Int = 40
+    // Constants for receipt formatting
+    private static let defaultColumns = 40
+    private static let quantityThreshold = 1.0
+    private static let priceDecimalPlaces = 2
+    private static let weightDecimalPlaces = 3
+    private static let discountLineOffset = 3
+    
+    // Display strings
+    private static let unitPriceIndent = "  "
+    private static let multiplicationSymbol = " * "
+    private static let totalLabel = "Total: "
+    private static let whitespaceChar = " "
+    private static let newline = "\n"
+    private static let discountOpenParen = "("
+    private static let discountCloseParen = ")"
+    private static let discountPrefix = "-"
+    
+    private var columns: Int = defaultColumns
 
     public init(columns: Int) {
         self.columns = columns
@@ -9,35 +25,35 @@ public class ReceiptPrinter {
     public func printReceipt(receipt: Receipt) -> String {
         var result = ""
         for item in receipt.items {
-            var price = String(format: "%.2f", item.totalPrice)
+            var price = String(format: "%.\(ReceiptPrinter.priceDecimalPlaces)f", item.totalPrice)
             var quantity = ReceiptPrinter.presentQuantity(item: item)
             var name = item.product.name
-            var unitPrice = String(format :"%.2f", item.price)
+            var unitPrice = String(format: "%.\(ReceiptPrinter.priceDecimalPlaces)f", item.price)
 
             var whitespaceSize = self.columns - name.count - price.count
-            var line = name + ReceiptPrinter.getWhitespace(whitespaceSize: whitespaceSize) + price + "\n"
+            var line = name + ReceiptPrinter.getWhitespace(whitespaceSize: whitespaceSize) + price + ReceiptPrinter.newline
 
-            if (item.quantity != 1) {
-                line += "  " + unitPrice + " * " + quantity + "\n"
+            if (item.quantity != ReceiptPrinter.quantityThreshold) {
+                line += ReceiptPrinter.unitPriceIndent + unitPrice + ReceiptPrinter.multiplicationSymbol + quantity + ReceiptPrinter.newline
             }
             result.append(line)
         }
         for discount in receipt.discounts {
             var productPresentation = discount.product.name
-            var pricePresentation = String(format: "%.2f", discount.discountAmount)
+            var pricePresentation = String(format: "%.\(ReceiptPrinter.priceDecimalPlaces)f", discount.discountAmount)
             var description = discount.description
             result.append(description)
-            result.append("(")
+            result.append(ReceiptPrinter.discountOpenParen)
             result.append(productPresentation)
-            result.append(")")
-            result.append(ReceiptPrinter.getWhitespace(whitespaceSize: self.columns - 3 - productPresentation.count - description.count - pricePresentation.count))
-            result.append("-")
+            result.append(ReceiptPrinter.discountCloseParen)
+            result.append(ReceiptPrinter.getWhitespace(whitespaceSize: self.columns - ReceiptPrinter.discountLineOffset - productPresentation.count - description.count - pricePresentation.count))
+            result.append(ReceiptPrinter.discountPrefix)
             result.append(pricePresentation)
-            result.append("\n")
+            result.append(ReceiptPrinter.newline)
         }
-        result.append("\n")
-        var pricePresentation = String(format: "%.2f", Double(receipt.getTotalPrice()))
-        var total = "Total: "
+        result.append(ReceiptPrinter.newline)
+        var pricePresentation = String(format: "%.\(ReceiptPrinter.priceDecimalPlaces)f", Double(receipt.getTotalPrice()))
+        var total = ReceiptPrinter.totalLabel
         var whitespace = ReceiptPrinter.getWhitespace(whitespaceSize: self.columns - total.count - pricePresentation.count)
         result.append(total)
         result.append(whitespace)
@@ -47,14 +63,14 @@ public class ReceiptPrinter {
 
     private static func presentQuantity(item: ReceiptItem ) -> String {
         return ProductUnit.Each == item.product.unit
-            ? String(format: "%x", Int(item.quantity))
-            : String(format: "%.3f", item.quantity)
+            ? String(format: "%d", Int(item.quantity))
+            : String(format: "%.\(weightDecimalPlaces)f", item.quantity)
     }
 
     private static func getWhitespace(whitespaceSize: Int) -> String {
         var whitespace = ""
         for i in 0..<whitespaceSize {
-            whitespace.append(" ")
+            whitespace.append(whitespaceChar)
         }
         return whitespace
     }
