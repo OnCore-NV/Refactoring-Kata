@@ -17,6 +17,8 @@ class ShoppingCart
 
     // Constants for discount description strings
     private const THREE_FOR_TWO_DESCRIPTION = '3 for 2';
+    private const TWO_FOR_PREFIX = '2 for ';
+    private const FOR_SEPARATOR = ' for ';
     private const PERCENT_OFF_SUFFIX = '% off';
 
     /**
@@ -82,7 +84,7 @@ class ShoppingCart
                     if ($quantityAsInt >= self::TWO_FOR_AMOUNT_QUANTITY) {
                         $total = $offer->getArgument() * intdiv($quantityAsInt, $x) + $quantityAsInt % self::TWO_FOR_AMOUNT_QUANTITY * $unitPrice;
                         $discountN = $unitPrice * $quantity - $total;
-                        $discount = new Discount($p, "2 for {$offer->getArgument()}", -1 * $discountN);
+                        $discount = new Discount($p, self::TWO_FOR_PREFIX . "{$offer->getArgument()}", -1 * $discountN);
                     }
                 }
 
@@ -104,7 +106,7 @@ class ShoppingCart
                 }
                 if ($offer->getOfferType()->equals(SpecialOfferType::FIVE_FOR_AMOUNT()) && $quantityAsInt >= self::FIVE_FOR_AMOUNT_QUANTITY) {
                     $discountTotal = $unitPrice * $quantity - ($offer->getArgument() * $numberOfXs + $quantityAsInt % self::FIVE_FOR_AMOUNT_QUANTITY * $unitPrice);
-                    $discount = new Discount($p, "${x} for {$offer->getArgument()}", -$discountTotal);
+                    $discount = new Discount($p, "${x}" . self::FOR_SEPARATOR . "{$offer->getArgument()}", -$discountTotal);
                 }
 
                 if ($discount !== null) {
