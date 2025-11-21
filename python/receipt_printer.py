@@ -1,8 +1,14 @@
 from model_objects import ProductUnit
 
+# Constants for magic numbers and strings
+DEFAULT_COLUMNS = 40
+SINGLE_ITEM_QUANTITY = 1
+TOTAL_LABEL = "Total: "
+
+
 class ReceiptPrinter:
 
-    def __init__(self, columns=40):
+    def __init__(self, columns=DEFAULT_COLUMNS):
         self.columns = columns
   
     def print_receipt(self, receipt):
@@ -23,7 +29,7 @@ class ReceiptPrinter:
         total_price_printed = self.print_price(item.total_price)
         name = item.product.name
         line = self.format_line_with_whitespace(name, total_price_printed)
-        if item.quantity != 1:
+        if item.quantity != SINGLE_ITEM_QUANTITY:
             line += f"  {self.print_price(item.price)} * {self.print_quantity(item)}\n"
         return line
 
@@ -51,6 +57,6 @@ class ReceiptPrinter:
         return self.format_line_with_whitespace(name, value)
 
     def present_total(self, receipt):
-        name = "Total: "
+        name = TOTAL_LABEL
         value = self.print_price(receipt.total_price())
         return self.format_line_with_whitespace(name, value)

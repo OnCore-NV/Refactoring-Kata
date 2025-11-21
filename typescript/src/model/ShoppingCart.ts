@@ -7,6 +7,19 @@ import {Receipt} from "./Receipt"
 import {Offer} from "./Offer"
 import {SpecialOfferType} from "./SpecialOfferType"
 
+// Constants for magic numbers
+const DEFAULT_ITEM_QUANTITY = 1.0;
+const TWO_FOR_AMOUNT_QUANTITY = 2;
+const THREE_FOR_TWO_QUANTITY = 3;
+const FIVE_FOR_AMOUNT_QUANTITY = 5;
+const PERCENTAGE_DIVISOR = 100.0;
+
+// Constants for discount description strings
+const THREE_FOR_TWO_DESCRIPTION = "3 for 2";
+const TWO_FOR_PREFIX = "2 for ";
+const FOR_SEPARATOR = " for ";
+const PERCENT_OFF_SUFFIX = "% off";
+
 type ProductQuantities = { [productName: string]: ProductQuantity }
 export type OffersByProduct = {[productName: string]: Offer};
 
@@ -21,7 +34,7 @@ export class ShoppingCart {
     }
 
     addItem(product: Product): void {
-        this.addItemQuantity(product, 1.0);
+        this.addItemQuantity(product, DEFAULT_ITEM_QUANTITY);
     }
 
     productQuantities(): ProductQuantities {
@@ -57,30 +70,30 @@ export class ShoppingCart {
                 let discount : Discount|null = null;
                 let x = 1;
                 if (offer.offerType == SpecialOfferType.ThreeForTwo) {
-                    x = 3;
+                    x = THREE_FOR_TWO_QUANTITY;
 
                 } else if (offer.offerType == SpecialOfferType.TwoForAmount) {
-                    x = 2;
-                    if (quantityAsInt >= 2) {
-                        const total = offer.argument * Math.floor(quantityAsInt / x) + quantityAsInt % 2 * unitPrice;
+                    x = TWO_FOR_AMOUNT_QUANTITY;
+                    if (quantityAsInt >= TWO_FOR_AMOUNT_QUANTITY) {
+                        const total = offer.argument * Math.floor(quantityAsInt / x) + quantityAsInt % TWO_FOR_AMOUNT_QUANTITY * unitPrice;
                         const discountN = unitPrice * quantity - total;
-                        discount = new Discount(product, "2 for " + offer.argument, discountN);
+                        discount = new Discount(product, TWO_FOR_PREFIX + offer.argument, discountN);
                     }
 
                 } if (offer.offerType == SpecialOfferType.FiveForAmount) {
-                    x = 5;
+                    x = FIVE_FOR_AMOUNT_QUANTITY;
                 }
                 const numberOfXs = Math.floor(quantityAsInt / x);
-                if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
-                    const discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                    discount = new Discount(product, "3 for 2", discountAmount);
+                if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > TWO_FOR_AMOUNT_QUANTITY) {
+                    const discountAmount = quantity * unitPrice - ((numberOfXs * TWO_FOR_AMOUNT_QUANTITY * unitPrice) + quantityAsInt % THREE_FOR_TWO_QUANTITY * unitPrice);
+                    discount = new Discount(product, THREE_FOR_TWO_DESCRIPTION, discountAmount);
                 }
                 if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
-                    discount = new Discount(product, offer.argument + "% off", quantity * unitPrice * offer.argument / 100.0);
+                    discount = new Discount(product, offer.argument + PERCENT_OFF_SUFFIX, quantity * unitPrice * offer.argument / PERCENTAGE_DIVISOR);
                 }
-                if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
-                    const discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-                    discount = new Discount(product, x + " for " + offer.argument, discountTotal);
+                if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= FIVE_FOR_AMOUNT_QUANTITY) {
+                    const discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % FIVE_FOR_AMOUNT_QUANTITY * unitPrice);
+                    discount = new Discount(product, x + FOR_SEPARATOR + offer.argument, discountTotal);
                 }
                 if (discount != null)
                     receipt.addDiscount(discount);
