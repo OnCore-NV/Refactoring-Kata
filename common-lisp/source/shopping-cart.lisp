@@ -2,6 +2,16 @@
 
 (in-package :supermarket-receipt)
 
+;;; Constants for magic numbers
+(defconstant +default-item-quantity+ 1.0)
+(defconstant +two-for-amount-quantity+ 2)
+(defconstant +three-for-two-quantity+ 3)
+(defconstant +five-for-amount-quantity+ 5)
+(defconstant +percentage-divisor+ 100.0)
+
+;;; Constants for discount description strings
+(defconstant +three-for-two-description+ "3 for 2")
+
 (defclass shopping-cart ()
         ((items :initform nil
                 :type list
@@ -11,7 +21,7 @@
                     :accessor shopping-cart-product-quantities)))
 
 (defmethod add-item ((a-cart shopping-cart) (an-item product))
-    (add-item-quantity a-cart an-item 1.0))
+    (add-item-quantity a-cart an-item +default-item-quantity+))
 
 (defmethod add-item-quantity ((a-cart shopping-cart) (an-item product) (a-quantity single-float))
     (push (make-instance 'product-quantity
@@ -35,39 +45,39 @@
                         (x 1)
                         (the-offer-type (offer-type offer-for-product)))
                     (if (eq the-offer-type 'three-for-two)
-                        (setf x 3)
+                        (setf x +three-for-two-quantity+)
                         (when (eq the-offer-type 'two-for-amount)
-                          (setf x 2)
-                          (when (>= floored-quantity 2)
+                          (setf x +two-for-amount-quantity+)
+                          (when (>= floored-quantity +two-for-amount-quantity+)
                             (let* ((total (+ (* (offer-argument offer-for-product) (floor (/ floored-quantity x)))
-                                             (* (mod floored-quantity 2) a-unit-price)))
+                                             (* (mod floored-quantity +two-for-amount-quantity+) a-unit-price)))
                                    (discount-n (- (* a-unit-price a-quantity) total)))
                               (setf a-discount (make-instance 'discount 
                                                               :product a-product
                                                               :description (format nil "2 for ~S" (offer-argument offer-for-product))
                                                               :amount (- discount-n)))))))
                     (when (eq the-offer-type 'five-for-amount)
-                      (setf x 5))
+                      (setf x +five-for-amount-quantity+))
                     (let ((number-of-x (floor (/ floored-quantity x))))
                       (when (and (eq the-offer-type 'three-for-two)
-                                 (> floored-quantity 2))
+                                 (> floored-quantity +two-for-amount-quantity+))
                         (let ((discount-amount (- (* a-quantity a-unit-price)
-                                                  (+ (* number-of-x 2 a-unit-price)
-                                                     (* (mod floored-quantity 3) a-unit-price)))))
+                                                  (+ (* number-of-x +two-for-amount-quantity+ a-unit-price)
+                                                     (* (mod floored-quantity +three-for-two-quantity+) a-unit-price)))))
                           (setf a-discount (make-instance 'discount
                                                           :product a-product
-                                                          :description "3 for 2"
+                                                          :description +three-for-two-description+
                                                           :amount (- discount-amount)))))
                       (when (eq the-offer-type 'ten-percent-discount)
                         (setf a-discount (make-instance 'discount
                                                         :product a-product
                                                         :description (format nil "~S % off" (offer-argument offer-for-product))
-                                                        :amount (/ (* (- a-quantity) a-unit-price (offer-argument offer-for-product)) 100.0))))
+                                                        :amount (/ (* (- a-quantity) a-unit-price (offer-argument offer-for-product)) +percentage-divisor+))))
                       (when (and (eq the-offer-type 'five-for-amount)
-                                 (>= floored-quantity 5))
+                                 (>= floored-quantity +five-for-amount-quantity+))
                         (let ((discount-total (- (* a-quantity a-unit-price)
                                                  (+ (* (offer-argument offer-for-product) number-of-x)
-                                                    (* (mod floored-quantity 5) a-unit-price)))))
+                                                    (* (mod floored-quantity +five-for-amount-quantity+) a-unit-price)))))
                           (setf a-discount (make-instance 'discount
                                                           :product a-product
                                                           :description (format nil "~S for ~S" x (offer-argument offer-for-product))

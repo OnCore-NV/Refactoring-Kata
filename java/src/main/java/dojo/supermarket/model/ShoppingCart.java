@@ -8,6 +8,19 @@ import java.util.Map;
 
 public class ShoppingCart {
 
+    // Constants for magic numbers
+    private static final double DEFAULT_ITEM_QUANTITY = 1.0;
+    private static final int TWO_FOR_AMOUNT_QUANTITY = 2;
+    private static final int THREE_FOR_TWO_QUANTITY = 3;
+    private static final int FIVE_FOR_AMOUNT_QUANTITY = 5;
+    private static final double PERCENTAGE_DIVISOR = 100.0;
+
+    // Constants for discount description strings
+    private static final String THREE_FOR_TWO_DESCRIPTION = "3 for 2";
+    private static final String TWO_FOR_PREFIX = "2 for ";
+    private static final String FOR_SEPARATOR = " for ";
+    private static final String PERCENT_OFF_SUFFIX = "% off";
+
     private final List<ProductQuantity> items = new ArrayList<>();
     private final Map<Product, Double> productQuantities = new HashMap<>();
 
@@ -16,7 +29,7 @@ public class ShoppingCart {
     }
 
     void addItem(Product product) {
-        addItemQuantity(product, 1.0);
+        addItemQuantity(product, DEFAULT_ITEM_QUANTITY);
     }
 
     Map<Product, Double> productQuantities() {
@@ -42,30 +55,30 @@ public class ShoppingCart {
                 Discount discount = null;
                 int x = 1;
                 if (offer.offerType == SpecialOfferType.THREE_FOR_TWO) {
-                    x = 3;
+                    x = THREE_FOR_TWO_QUANTITY;
 
                 } else if (offer.offerType == SpecialOfferType.TWO_FOR_AMOUNT) {
-                    x = 2;
-                    if (quantityAsInt >= 2) {
-                        double total = offer.argument * (quantityAsInt / x) + quantityAsInt % 2 * unitPrice;
+                    x = TWO_FOR_AMOUNT_QUANTITY;
+                    if (quantityAsInt >= TWO_FOR_AMOUNT_QUANTITY) {
+                        double total = offer.argument * (quantityAsInt / x) + quantityAsInt % TWO_FOR_AMOUNT_QUANTITY * unitPrice;
                         double discountN = unitPrice * quantity - total;
-                        discount = new Discount(p, "2 for " + offer.argument, -discountN);
+                        discount = new Discount(p, TWO_FOR_PREFIX + offer.argument, -discountN);
                     }
 
                 } if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT) {
-                    x = 5;
+                    x = FIVE_FOR_AMOUNT_QUANTITY;
                 }
                 int numberOfXs = quantityAsInt / x;
-                if (offer.offerType == SpecialOfferType.THREE_FOR_TWO && quantityAsInt > 2) {
-                    double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                    discount = new Discount(p, "3 for 2", -discountAmount);
+                if (offer.offerType == SpecialOfferType.THREE_FOR_TWO && quantityAsInt > TWO_FOR_AMOUNT_QUANTITY) {
+                    double discountAmount = quantity * unitPrice - ((numberOfXs * TWO_FOR_AMOUNT_QUANTITY * unitPrice) + quantityAsInt % THREE_FOR_TWO_QUANTITY * unitPrice);
+                    discount = new Discount(p, THREE_FOR_TWO_DESCRIPTION, -discountAmount);
                 }
                 if (offer.offerType == SpecialOfferType.TEN_PERCENT_DISCOUNT) {
-                    discount = new Discount(p, offer.argument + "% off", -quantity * unitPrice * offer.argument / 100.0);
+                    discount = new Discount(p, offer.argument + PERCENT_OFF_SUFFIX, -quantity * unitPrice * offer.argument / PERCENTAGE_DIVISOR);
                 }
-                if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT && quantityAsInt >= 5) {
-                    double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-                    discount = new Discount(p, x + " for " + offer.argument, -discountTotal);
+                if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT && quantityAsInt >= FIVE_FOR_AMOUNT_QUANTITY) {
+                    double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % FIVE_FOR_AMOUNT_QUANTITY * unitPrice);
+                    discount = new Discount(p, x + FOR_SEPARATOR + offer.argument, -discountTotal);
                 }
                 if (discount != null)
                     receipt.addDiscount(discount);

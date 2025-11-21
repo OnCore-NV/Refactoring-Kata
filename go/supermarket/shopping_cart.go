@@ -5,6 +5,23 @@ import (
 	"math"
 )
 
+// Constants for magic numbers
+const (
+	defaultItemQuantity   = 1.0
+	twoForAmountQuantity  = 2
+	threeForTwoQuantity   = 3
+	fiveForAmountQuantity = 5
+	percentageDivisor     = 100.0
+)
+
+// Constants for discount description strings
+const (
+	threeForTwoDescription = "3 for 2"
+	twoForPrefix           = "2 for %.2f"
+	forSeparatorFormat     = "%d for %.2f"
+	percentOffSuffixFormat = "%.0f %% off"
+)
+
 type ProductQuantity struct {
 	product Product
 	quantity float64
@@ -23,7 +40,7 @@ func NewShoppingCart() *ShoppingCart {
 }
 
 func (c *ShoppingCart) addItem(product Product) {
-	c.addItemQuantity(product, 1)
+	c.addItemQuantity(product, defaultItemQuantity)
 }
 
 func (c *ShoppingCart) addItemQuantity(product Product, amount float64) {
@@ -45,31 +62,31 @@ func (c *ShoppingCart) handleOffers(receipt *Receipt, offers map[Product]Special
 			var discount *Discount = nil
 			var x = 1
 			if offer.offerType == ThreeForTwo {
-				x = 3
+				x = threeForTwoQuantity
 
 			} else if offer.offerType == TwoForAmount {
-				x = 2
-				if quantityAsInt >= 2 {
-					var total = offer.argument * float64(quantityAsInt / x) + float64(quantityAsInt % 2) * unitPrice
+				x = twoForAmountQuantity
+				if quantityAsInt >= twoForAmountQuantity {
+					var total = offer.argument * float64(quantityAsInt / x) + float64(quantityAsInt % twoForAmountQuantity) * unitPrice
 					var discountN = unitPrice * quantity - total;
-					discount = &Discount{product: p, description: fmt.Sprintf("2 for %.2f", offer.argument), discountAmount: -discountN}
+					discount = &Discount{product: p, description: fmt.Sprintf(twoForPrefix, offer.argument), discountAmount: -discountN}
 				}
 
 			}
 			if offer.offerType == FiveForAmount {
-				x = 5
+				x = fiveForAmountQuantity
 			}
 			var numberOfXs int = quantityAsInt / x;
-			if offer.offerType == ThreeForTwo && quantityAsInt > 2 {
-				var discountAmount = quantity * unitPrice - (float64(numberOfXs * 2) * unitPrice + float64(quantityAsInt % 3) * unitPrice)
-				discount = &Discount{product: p, description: "3 for 2", discountAmount: -discountAmount}
+			if offer.offerType == ThreeForTwo && quantityAsInt > twoForAmountQuantity {
+				var discountAmount = quantity * unitPrice - (float64(numberOfXs * twoForAmountQuantity) * unitPrice + float64(quantityAsInt % threeForTwoQuantity) * unitPrice)
+				discount = &Discount{product: p, description: threeForTwoDescription, discountAmount: -discountAmount}
 			}
 			if offer.offerType == TenPercentDiscount {
-				discount = &Discount{product: p, description: fmt.Sprintf("%.0f %% off", offer.argument), discountAmount: -quantity * unitPrice * offer.argument / 100.0}
+				discount = &Discount{product: p, description: fmt.Sprintf(percentOffSuffixFormat, offer.argument), discountAmount: -quantity * unitPrice * offer.argument / percentageDivisor}
 			}
-			if offer.offerType == FiveForAmount && quantityAsInt >= 5 {
-				var discountTotal = unitPrice * quantity - (offer.argument * float64(numberOfXs) + float64(quantityAsInt % 5) * unitPrice)
-				discount = &Discount{product: p, description: fmt.Sprintf("%d for %.2f", x, offer.argument), discountAmount: -discountTotal}
+			if offer.offerType == FiveForAmount && quantityAsInt >= fiveForAmountQuantity {
+				var discountTotal = unitPrice * quantity - (offer.argument * float64(numberOfXs) + float64(quantityAsInt % fiveForAmountQuantity) * unitPrice)
+				discount = &Discount{product: p, description: fmt.Sprintf(forSeparatorFormat, x, offer.argument), discountAmount: -discountTotal}
 			}
 			if discount != nil {
 				receipt.addDiscount(*discount)

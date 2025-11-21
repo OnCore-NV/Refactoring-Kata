@@ -3,6 +3,19 @@
 #include <stdio.h>
 #include "supermarket.h"
 
+// Constants for magic numbers
+#define DEFAULT_ITEM_QUANTITY 1.0
+#define TWO_FOR_AMOUNT_QUANTITY 2
+#define THREE_FOR_TWO_QUANTITY 3
+#define FIVE_FOR_AMOUNT_QUANTITY 5
+#define PERCENTAGE_DIVISOR 100.0
+
+// Constants for discount description strings
+#define THREE_FOR_TWO_DESCRIPTION "3 for 2"
+#define TWO_FOR_FORMAT "2 for %f"
+#define FOR_FORMAT "%d for %f"
+#define PERCENT_OFF_FORMAT "%.0f%% off"
+
 struct product_t* product_create(char* name, enum unit unit) {
     struct product_t* product = malloc(sizeof(*product));
     strncpy(product->name, name, sizeof(product->name) - 1);
@@ -76,36 +89,36 @@ void handle_offers(struct cart_t* cart, struct receipt_t* receipt, struct specia
             int x = 1;
 
             if (offer->type == ThreeForTwo) {
-                x = 3;
+                x = THREE_FOR_TWO_QUANTITY;
             } else if (offer->type == TwoForAmount) {
-                x = 2;
-                if (quantityAsInt >= 2) {
-                    double total = offer->argument * (quantityAsInt / x) + quantityAsInt % 2 * unitPrice;
+                x = TWO_FOR_AMOUNT_QUANTITY;
+                if (quantityAsInt >= TWO_FOR_AMOUNT_QUANTITY) {
+                    double total = offer->argument * (quantityAsInt / x) + quantityAsInt % TWO_FOR_AMOUNT_QUANTITY * unitPrice;
                     double discountN = unitPrice * quantity - total;
                     char description[MAX_NAME_LENGTH];
-                    sprintf(description, "2 for %f", offer->argument);
+                    sprintf(description, TWO_FOR_FORMAT, offer->argument);
                     discount = discount_create(description, -discountN, &product);
                 }
             } if (offer->type == FiveForAmount) {
-                x = 5;
+                x = FIVE_FOR_AMOUNT_QUANTITY;
             }
             int numberOfXs = quantityAsInt / x;
-            if (offer->type == ThreeForTwo && quantityAsInt > 2) {
-                double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
+            if (offer->type == ThreeForTwo && quantityAsInt > TWO_FOR_AMOUNT_QUANTITY) {
+                double discountAmount = quantity * unitPrice - ((numberOfXs * TWO_FOR_AMOUNT_QUANTITY * unitPrice) + quantityAsInt % THREE_FOR_TWO_QUANTITY * unitPrice);
                 char description[MAX_NAME_LENGTH];
-                sprintf(description, "3 for 2");
+                sprintf(description, THREE_FOR_TWO_DESCRIPTION);
                 discount = discount_create(description, -discountAmount, &product);
             }
             if (offer->type == TenPercentDiscount) {
                 char description[MAX_NAME_LENGTH];
-                sprintf(description, "%.0f%% off", offer->argument);
-                discount = discount_create(description, -quantity * unitPrice * offer->argument / 100.0, &product);
+                sprintf(description, PERCENT_OFF_FORMAT, offer->argument);
+                discount = discount_create(description, -quantity * unitPrice * offer->argument / PERCENTAGE_DIVISOR, &product);
 
             }
-            if (offer->type == FiveForAmount && quantityAsInt >= 5) {
-                double discountTotal = unitPrice * quantity - (offer->argument * numberOfXs + quantityAsInt % 5 * unitPrice);
+            if (offer->type == FiveForAmount && quantityAsInt >= FIVE_FOR_AMOUNT_QUANTITY) {
+                double discountTotal = unitPrice * quantity - (offer->argument * numberOfXs + quantityAsInt % FIVE_FOR_AMOUNT_QUANTITY * unitPrice);
                 char description[MAX_NAME_LENGTH];
-                sprintf(description, "%d for %f", x, offer->argument);
+                sprintf(description, FOR_FORMAT, x, offer->argument);
                 discount = discount_create(description, -discountTotal, &product);
             }
             if (discount != NULL) {
