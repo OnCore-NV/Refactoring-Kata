@@ -1,3 +1,16 @@
+# Constants for magic numbers
+DEFAULT_ITEM_QUANTITY = 1.0
+TWO_FOR_AMOUNT_QUANTITY = 2
+THREE_FOR_TWO_QUANTITY = 3
+FIVE_FOR_AMOUNT_QUANTITY = 5
+PERCENTAGE_DIVISOR = 100.0
+
+# Constants for discount description strings
+THREE_FOR_TWO_DESCRIPTION = "3 for 2"
+TWO_FOR_PREFIX = "2 for "
+FOR_SEPARATOR = " for "
+PERCENT_OFF_SUFFIX = "% off"
+
 class ShoppingCart
 
   def initialize
@@ -10,7 +23,7 @@ class ShoppingCart
   end
 
   def add_item(product)
-    add_item_quantity(product, 1.0)
+    add_item_quantity(product, DEFAULT_ITEM_QUANTITY)
     nil
   end
 
@@ -37,31 +50,31 @@ class ShoppingCart
         discount = nil
         x = 1
         if offer.offer_type == SpecialOfferType::THREE_FOR_TWO
-          x = 3
+          x = THREE_FOR_TWO_QUANTITY
 
         elsif offer.offer_type == SpecialOfferType::TWO_FOR_AMOUNT
-          x = 2
-          if quantity_as_int >= 2
-            total = offer.argument * (quantity_as_int / x) + quantity_as_int % 2 * unit_price
+          x = TWO_FOR_AMOUNT_QUANTITY
+          if quantity_as_int >= TWO_FOR_AMOUNT_QUANTITY
+            total = offer.argument * (quantity_as_int / x) + quantity_as_int % TWO_FOR_AMOUNT_QUANTITY * unit_price
             discount_n = unit_price * quantity - total
-            discount = Discount.new(p, "2 for " + offer.argument.to_s, discount_n)
+            discount = Discount.new(p, TWO_FOR_PREFIX + offer.argument.to_s, discount_n)
           end
 
         end
         if offer.offer_type == SpecialOfferType:: FIVE_FOR_AMOUNT
-          x = 5
+          x = FIVE_FOR_AMOUNT_QUANTITY
         end
         number_of_x = quantity_as_int / x
-        if offer.offer_type == SpecialOfferType::THREE_FOR_TWO && quantity_as_int > 2
-          discount_amount = quantity * unit_price - ((number_of_x * 2 * unit_price) + quantity_as_int % 3 * unit_price)
-          discount = Discount.new(p, "3 for 2", discount_amount)
+        if offer.offer_type == SpecialOfferType::THREE_FOR_TWO && quantity_as_int > TWO_FOR_AMOUNT_QUANTITY
+          discount_amount = quantity * unit_price - ((number_of_x * TWO_FOR_AMOUNT_QUANTITY * unit_price) + quantity_as_int % THREE_FOR_TWO_QUANTITY * unit_price)
+          discount = Discount.new(p, THREE_FOR_TWO_DESCRIPTION, discount_amount)
         end
         if offer.offer_type == SpecialOfferType::TEN_PERCENT_DISCOUNT
-          discount = Discount.new(p, offer.argument.to_s + "% off", quantity * unit_price * offer.argument / 100.0)
+          discount = Discount.new(p, offer.argument.to_s + PERCENT_OFF_SUFFIX, quantity * unit_price * offer.argument / PERCENTAGE_DIVISOR)
         end
-        if offer.offer_type == SpecialOfferType::FIVE_FOR_AMOUNT && quantity_as_int >= 5
-          discount_total = unit_price * quantity - (offer.argument * number_of_x + quantity_as_int % 5 * unit_price)
-          discount = Discount.new(p, x.to_s + " for " + offer.argument.to_s, discount_total)
+        if offer.offer_type == SpecialOfferType::FIVE_FOR_AMOUNT && quantity_as_int >= FIVE_FOR_AMOUNT_QUANTITY
+          discount_total = unit_price * quantity - (offer.argument * number_of_x + quantity_as_int % FIVE_FOR_AMOUNT_QUANTITY * unit_price)
+          discount = Discount.new(p, x.to_s + FOR_SEPARATOR + offer.argument.to_s, discount_total)
         end
 
         receipt.add_discount(discount) if discount

@@ -5,12 +5,22 @@ defmodule Supermarket.Model.ShoppingCart do
   alias Supermarket.Model.Receipt
   alias Supermarket.Model.SupermarketCatalog
 
+  # Constants for magic numbers
+  @default_item_quantity 1.0
+  @two_for_amount_quantity 2
+  @three_for_two_quantity 3
+  @five_for_amount_quantity 5
+  @percentage_divisor 100.0
+
+  # Constants for discount description strings
+  @three_for_two_description "3 for 2"
+
   defstruct [:items, :product_quantities]
 
   def new, do: %__MODULE__{items: [], product_quantities: %{}}
 
   def add_item(cart, product) do
-    add_item_quantity(cart, product, 1.0)
+    add_item_quantity(cart, product, @default_item_quantity)
   end
 
   def add_item_quantity(cart, product, quantity) do
@@ -41,48 +51,48 @@ defmodule Supermarket.Model.ShoppingCart do
         {discount, x} =
           cond do
             offer.offer_type == :three_for_two ->
-              {discount, 3}
+              {discount, @three_for_two_quantity}
 
             offer.offer_type == :two_for_amount ->
-              if quantity_as_int >= 2 do
-                x = 2
+              if quantity_as_int >= @two_for_amount_quantity do
+                x = @two_for_amount_quantity
                 int_division = div(quantity_as_int, x)
                 price_per_unit = offer.argument * int_division
-                the_total = Integer.mod(quantity_as_int, 2) * unit_price
+                the_total = Integer.mod(quantity_as_int, @two_for_amount_quantity) * unit_price
                 total = price_per_unit + the_total
                 discount_n = unit_price * quantity - total
-                {Discount.new(p, "2 for #{offer.argument}", -discount_n), 2}
+                {Discount.new(p, "2 for #{offer.argument}", -discount_n), @two_for_amount_quantity}
               else
                 {discount, x}
               end
 
             true ->
-              {discount, 2}
+              {discount, @two_for_amount_quantity}
           end
 
-        x = if offer.offer_type == :five_for_amount, do: 5, else: x
+        x = if offer.offer_type == :five_for_amount, do: @five_for_amount_quantity, else: x
         number_of_xs = div(quantity_as_int, x)
 
         discount =
           cond do
-            offer.offer_type == :three_for_two and quantity_as_int > 2 ->
+            offer.offer_type == :three_for_two and quantity_as_int > @two_for_amount_quantity ->
               discount_amount =
                 quantity * unit_price -
-                  (number_of_xs * 2 * unit_price + Integer.mod(quantity_as_int, 3) * unit_price)
+                  (number_of_xs * @two_for_amount_quantity * unit_price + Integer.mod(quantity_as_int, @three_for_two_quantity) * unit_price)
 
-              Discount.new(p, "3 for 2", -discount_amount)
+              Discount.new(p, @three_for_two_description, -discount_amount)
 
             offer.offer_type == :ten_percent_discount ->
               Discount.new(
                 p,
                 "#{offer.argument}% off",
-                -quantity * unit_price * offer.argument / 100.0
+                -quantity * unit_price * offer.argument / @percentage_divisor
               )
 
-            offer.offer_type == :five_for_amount and quantity_as_int >= 5 ->
+            offer.offer_type == :five_for_amount and quantity_as_int >= @five_for_amount_quantity ->
               discount_total =
                 unit_price * quantity -
-                  (offer.argument * number_of_xs + Integer.mod(quantity_as_int, 5) * unit_price)
+                  (offer.argument * number_of_xs + Integer.mod(quantity_as_int, @five_for_amount_quantity) * unit_price)
 
               Discount.new(p, "#{x} for #{offer.argument}", -discount_total)
 
