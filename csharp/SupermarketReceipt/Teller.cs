@@ -20,7 +20,14 @@ namespace SupermarketReceipt
         public Receipt ChecksOutArticlesFrom(ShoppingCart theCart)
         {
             var receipt = new Receipt();
-            var productQuantities = theCart.GetItems();
+            AddProductsToReceipt(theCart, receipt);
+            ApplyOffersToReceipt(theCart, receipt);
+            return receipt;
+        }
+
+        private void AddProductsToReceipt(ShoppingCart cart, Receipt receipt)
+        {
+            var productQuantities = cart.GetItems();
             foreach (var pq in productQuantities)
             {
                 var p = pq.Product;
@@ -29,10 +36,11 @@ namespace SupermarketReceipt
                 var price = quantity * unitPrice;
                 receipt.AddProduct(p, quantity, unitPrice, price);
             }
+        }
 
-            theCart.HandleOffers(receipt, _offers, _catalog);
-
-            return receipt;
+        private void ApplyOffersToReceipt(ShoppingCart cart, Receipt receipt)
+        {
+            cart.HandleOffers(receipt, _offers, _catalog);
         }
     }
 }
