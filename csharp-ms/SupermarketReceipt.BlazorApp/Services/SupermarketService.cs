@@ -7,6 +7,7 @@ namespace SupermarketReceipt.BlazorApp.Services
         private readonly FakeCatalog _catalog;
         private readonly Teller _teller;
         private ShoppingCart _cart;
+        private readonly List<(Product Product, double Price)> _availableProducts;
         
         public SupermarketService()
         {
@@ -14,29 +15,27 @@ namespace SupermarketReceipt.BlazorApp.Services
             _teller = new Teller(_catalog);
             _cart = new ShoppingCart();
             
-            // Initialize with some sample products 🦜
+            // Define available products 🦜
+            _availableProducts = new List<(Product, double)>
+            {
+                (new Product("Parrot Toothbrush 🦜", ProductUnit.Each), 0.99),
+                (new Product("Tropical Apples 🦜", ProductUnit.Kilo), 1.99),
+                (new Product("Parrot Rice 🦜", ProductUnit.Each), 2.49),
+                (new Product("Parrot Toothpaste 🦜", ProductUnit.Each), 1.79),
+                (new Product("Cherry Tomatoes 🦜", ProductUnit.Each), 0.69),
+                (new Product("Parrot Milk 🦜", ProductUnit.Each), 1.29)
+            };
+            
+            // Initialize catalog with products
             InitializeCatalog();
         }
         
         private void InitializeCatalog()
         {
-            var toothbrush = new Product("Parrot Toothbrush 🦜", ProductUnit.Each);
-            _catalog.AddProduct(toothbrush, 0.99);
-            
-            var apples = new Product("Tropical Apples 🦜", ProductUnit.Kilo);
-            _catalog.AddProduct(apples, 1.99);
-            
-            var rice = new Product("Parrot Rice 🦜", ProductUnit.Each);
-            _catalog.AddProduct(rice, 2.49);
-            
-            var toothpaste = new Product("Parrot Toothpaste 🦜", ProductUnit.Each);
-            _catalog.AddProduct(toothpaste, 1.79);
-            
-            var cherryTomatoes = new Product("Cherry Tomatoes 🦜", ProductUnit.Each);
-            _catalog.AddProduct(cherryTomatoes, 0.69);
-            
-            var milk = new Product("Parrot Milk 🦜", ProductUnit.Each);
-            _catalog.AddProduct(milk, 1.29);
+            foreach (var (product, price) in _availableProducts)
+            {
+                _catalog.AddProduct(product, price);
+            }
         }
         
         public SupermarketCatalog GetCatalog() => _catalog;
@@ -66,15 +65,7 @@ namespace SupermarketReceipt.BlazorApp.Services
         
         public List<Product> GetAllProducts()
         {
-            return new List<Product>
-            {
-                new Product("Parrot Toothbrush 🦜", ProductUnit.Each),
-                new Product("Tropical Apples 🦜", ProductUnit.Kilo),
-                new Product("Parrot Rice 🦜", ProductUnit.Each),
-                new Product("Parrot Toothpaste 🦜", ProductUnit.Each),
-                new Product("Cherry Tomatoes 🦜", ProductUnit.Each),
-                new Product("Parrot Milk 🦜", ProductUnit.Each)
-            };
+            return _availableProducts.Select(p => p.Product).ToList();
         }
         
         public double GetProductPrice(Product product)
