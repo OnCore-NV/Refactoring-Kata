@@ -1,0 +1,246 @@
+@page "/"
+@rendermode InteractiveServer
+@inject SupermarketService SupermarketService
+
+<PageTitle>Parrot Supermarket 🦜</PageTitle>
+
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <h1 class="display-4">🦜 Parrot Supermarket 🦜</h1>
+        <p class="lead">Welcome to the Parrot-themed Supermarket Receipt App!</p>
+    </div>
+
+    <div class="row">
+        <!-- Products Section -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3>🦜 Products</h3>
+                </div>
+                <div class="card-body">
+                    @foreach (var product in _products)
+                    {
+                        <div class="product-item mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5>@product.Name</h5>
+                                    <p class="mb-0">
+                                        Price: £@SupermarketService.GetProductPrice(product).ToString("F2")
+                                        @if (product.Unit == ProductUnit.Kilo)
+                                        {
+                                            <span> per kg</span>
+                                        }
+                                        else
+                                        {
+                                            <span> each</span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="number" 
+                                           class="form-control" 
+                                           style="width: 80px;"
+                                           @bind="_quantities[product.Name]" 
+                                           min="0.1" 
+                                           step="0.1" />
+                                    <button class="btn btn-primary" @onclick="() => AddToCart(product)">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Special Offers Section -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h3>🦜 Special Offers</h3>
+                </div>
+                <div class="card-body">
+                    @foreach (var product in _products)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">@product.Name</label>
+                            <div class="d-flex gap-2">
+                                <select class="form-select" @bind="_selectedOfferTypes[product.Name]">
+                                    <option value="">None</option>
+                                    <option value="@SpecialOfferType.TenPercentDiscount">10% Discount</option>
+                                    <option value="@SpecialOfferType.ThreeForTwo">3 for 2</option>
+                                    <option value="@SpecialOfferType.TwoForAmount">2 for Amount</option>
+                                    <option value="@SpecialOfferType.FiveForAmount">5 for Amount</option>
+                                </select>
+                                @if (_selectedOfferTypes[product.Name] == "TwoForAmount" || 
+                                     _selectedOfferTypes[product.Name] == "FiveForAmount")
+                                {
+                                    <input type="number" 
+                                           class="form-control" 
+                                           style="width: 100px;"
+                                           @bind="_offerArguments[product.Name]" 
+                                           placeholder="Amount" 
+                                           step="0.01" />
+                                }
+                                else if (_selectedOfferTypes[product.Name] == "TenPercentDiscount")
+                                {
+                                    <input type="number" 
+                                           class="form-control" 
+                                           style="width: 100px;"
+                                           @bind="_offerArguments[product.Name]" 
+                                           placeholder="%" 
+                                           min="1" 
+                                           max="100" />
+                                }
+                                <button class="btn btn-warning" @onclick="() => ApplyOffer(product)">
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Shopping Cart & Receipt Section -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3>🦜 Shopping Cart</h3>
+                </div>
+                <div class="card-body">
+                    @if (_cartItems.Any())
+                    {
+                        <ul class="list-group mb-3">
+                            @foreach (var item in _cartItems)
+                            {
+                                var price = SupermarketService.GetProductPrice(item.Product) * item.Quantity;
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>@item.Product.Name (x@item.Quantity)</span>
+                                    <span>£@(price.ToString("F2"))</span>
+                                </li>
+                            }
+                        </ul>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success flex-grow-1" @onclick="Checkout">
+                                🦜 Checkout
+                            </button>
+                            <button class="btn btn-danger" @onclick="ClearCart">
+                                Clear
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Your cart is empty. Add some items! 🦜</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Receipt Section -->
+            @if (_receipt != null)
+            {
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h3>🦜 Receipt</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="receipt-content">
+                            <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace;">@_receiptText</pre>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <h4 class="text-success">Total: £@_receipt.GetTotalPrice().ToString("F2")</h4>
+                        </div>
+                        <button class="btn btn-secondary mt-2" @onclick="ClearReceipt">
+                            New Transaction
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Product> _products = new();
+    private Dictionary<string, double> _quantities = new();
+    private Dictionary<string, string> _selectedOfferTypes = new();
+    private Dictionary<string, double> _offerArguments = new();
+    private List<ProductQuantity> _cartItems = new();
+    private Receipt? _receipt;
+    private string _receiptText = "";
+
+    protected override void OnInitialized()
+    {
+        _products = SupermarketService.GetAllProducts();
+        
+        // Initialize dictionaries
+        foreach (var product in _products)
+        {
+            _quantities[product.Name] = 1.0;
+            _selectedOfferTypes[product.Name] = "";
+            _offerArguments[product.Name] = 0.0;
+        }
+        
+        UpdateCartItems();
+    }
+
+    private void AddToCart(Product product)
+    {
+        var quantity = _quantities[product.Name];
+        if (quantity > 0)
+        {
+            SupermarketService.AddToCart(product, quantity);
+            UpdateCartItems();
+        }
+    }
+
+    private void ApplyOffer(Product product)
+    {
+        var offerTypeStr = _selectedOfferTypes[product.Name];
+        if (!string.IsNullOrEmpty(offerTypeStr))
+        {
+            var offerType = Enum.Parse<SpecialOfferType>(offerTypeStr);
+            var argument = _offerArguments[product.Name];
+            
+            if (offerType == SpecialOfferType.TenPercentDiscount)
+            {
+                argument = argument > 0 ? argument : 10.0;
+            }
+            else if (offerType == SpecialOfferType.TwoForAmount || offerType == SpecialOfferType.FiveForAmount)
+            {
+                if (argument <= 0)
+                {
+                    return; // Need a valid amount
+                }
+            }
+            
+            SupermarketService.AddSpecialOffer(offerType, product, argument);
+        }
+    }
+
+    private void UpdateCartItems()
+    {
+        _cartItems = SupermarketService.GetCart().GetItems();
+    }
+
+    private void Checkout()
+    {
+        _receipt = SupermarketService.CheckOut();
+        var printer = new ReceiptPrinter();
+        _receiptText = printer.PrintReceipt(_receipt);
+    }
+
+    private void ClearCart()
+    {
+        SupermarketService.ResetCart();
+        UpdateCartItems();
+    }
+
+    private void ClearReceipt()
+    {
+        _receipt = null;
+        _receiptText = "";
+        SupermarketService.ResetCart();
+        UpdateCartItems();
+    }
+}
