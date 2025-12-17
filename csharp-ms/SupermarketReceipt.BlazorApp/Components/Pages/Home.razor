@@ -115,7 +115,7 @@
                             {
                                 var price = SupermarketService.GetProductPrice(item.Product) * item.Quantity;
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>@item.Product.Name (x@item.Quantity)</span>
+                                    <span>@item.Product.Name (x@(item.Quantity))</span>
                                     <span>£@(price.ToString("F2"))</span>
                                 </li>
                             }

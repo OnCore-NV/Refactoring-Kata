@@ -3,3 +3,5 @@ bin
 obj
 packages
 *.sln.DotSettings.user
+# Ignore Blazor wwwroot/lib folder (Bootstrap and other libraries)
+**/wwwroot/lib/
