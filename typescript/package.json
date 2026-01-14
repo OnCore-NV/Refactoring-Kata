@@ -6,21 +6,34 @@
   "scripts": {
     "test": "mocha --require ts-node/register --recursive test/**/*.test.ts",
     "watch:test": "npm run test -- --watch-extensions ts --watch",
-    "compile": "tsc"
+    "compile": "tsc",
+    "start": "webpack serve --mode development --open",
+    "build": "webpack --mode production"
   },
   "author": "Johan Martinsson",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^10.0.6",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
     "approvals": "^6.2.4",
     "chai": "^4.4.1",
-    "mocha": "^10.3.0"
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.5",
+    "mocha": "^10.3.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.4",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.3"
   },
   "dependencies": {
     "@types/lodash": "^4.14.119",
     "@types/node": "^20.11.25",
     "lodash": "^4.17.19",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }
