@@ -1,5 +1,9 @@
 class ShoppingCart
 
+  # Discount description constants
+  THREE_FOR_TWO_DESCRIPTION = "3 for 2"
+  PERCENT_OFF_SUFFIX = "% off"
+
   def initialize
     @items = []
     @product_quantities = {}
@@ -54,10 +58,10 @@ class ShoppingCart
         number_of_x = quantity_as_int / x
         if offer.offer_type == SpecialOfferType::THREE_FOR_TWO && quantity_as_int > 2
           discount_amount = quantity * unit_price - ((number_of_x * 2 * unit_price) + quantity_as_int % 3 * unit_price)
-          discount = Discount.new(p, "3 for 2", discount_amount)
+          discount = Discount.new(p, THREE_FOR_TWO_DESCRIPTION, discount_amount)
         end
         if offer.offer_type == SpecialOfferType::TEN_PERCENT_DISCOUNT
-          discount = Discount.new(p, offer.argument.to_s + "% off", quantity * unit_price * offer.argument / 100.0)
+          discount = Discount.new(p, offer.argument.to_s + PERCENT_OFF_SUFFIX, quantity * unit_price * offer.argument / 100.0)
         end
         if offer.offer_type == SpecialOfferType::FIVE_FOR_AMOUNT && quantity_as_int >= 5
           discount_total = unit_price * quantity - (offer.argument * number_of_x + quantity_as_int % 5 * unit_price)

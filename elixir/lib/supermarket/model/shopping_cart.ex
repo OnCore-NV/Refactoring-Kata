@@ -5,6 +5,10 @@ defmodule Supermarket.Model.ShoppingCart do
   alias Supermarket.Model.Receipt
   alias Supermarket.Model.SupermarketCatalog
 
+  # Discount description constants
+  @three_for_two_description "3 for 2"
+  @percent_off_suffix "% off"
+
   defstruct [:items, :product_quantities]
 
   def new, do: %__MODULE__{items: [], product_quantities: %{}}
@@ -70,12 +74,12 @@ defmodule Supermarket.Model.ShoppingCart do
                 quantity * unit_price -
                   (number_of_xs * 2 * unit_price + Integer.mod(quantity_as_int, 3) * unit_price)
 
-              Discount.new(p, "3 for 2", -discount_amount)
+              Discount.new(p, @three_for_two_description, -discount_amount)
 
             offer.offer_type == :ten_percent_discount ->
               Discount.new(
                 p,
-                "#{offer.argument}% off",
+                "#{offer.argument}#{@percent_off_suffix}",
                 -quantity * unit_price * offer.argument / 100.0
               )
 
