@@ -5,7 +5,7 @@ from model_objects import ProductQuantity, SpecialOfferType, Discount
 
 # Discount description constants
 THREE_FOR_TWO_DESCRIPTION = "3 for 2"
-PERCENT_OFF_SUFFIX = "% off"
+PERCENT_OFF_SUFFIX = " % off"
 
 
 class ShoppingCart:

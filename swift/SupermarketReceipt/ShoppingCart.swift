@@ -2,7 +2,7 @@ public class ShoppingCart {
 
     // Discount description constants
     private static let threeForTwoDescription = "3 for 2"
-    private static let percentOffSuffix = "% off"
+    private static let percentOffSuffix = " % off"
 
     public var items = [ProductQuantity]()
     public var productQuantities = [Product: Double]()

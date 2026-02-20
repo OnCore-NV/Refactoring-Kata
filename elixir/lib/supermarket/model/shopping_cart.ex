@@ -7,7 +7,7 @@ defmodule Supermarket.Model.ShoppingCart do
 
   # Discount description constants
   @three_for_two_description "3 for 2"
-  @percent_off_suffix "% off"
+  @percent_off_suffix " % off"
 
   defstruct [:items, :product_quantities]
 

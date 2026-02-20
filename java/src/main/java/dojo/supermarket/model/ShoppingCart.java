@@ -10,7 +10,7 @@ public class ShoppingCart {
 
     // Discount description constants
     private static final String THREE_FOR_TWO_DESCRIPTION = "3 for 2";
-    private static final String PERCENT_OFF_SUFFIX = "% off";
+    private static final String PERCENT_OFF_SUFFIX = " % off";
 
     private final List<ProductQuantity> items = new ArrayList<>();
     private final Map<Product, Double> productQuantities = new HashMap<>();

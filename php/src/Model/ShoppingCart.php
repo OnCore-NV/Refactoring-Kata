@@ -10,7 +10,7 @@ class ShoppingCart
 {
     // Discount description constants
     private const THREE_FOR_TWO_DESCRIPTION = '3 for 2';
-    private const PERCENT_OFF_SUFFIX = '% off';
+    private const PERCENT_OFF_SUFFIX = ' % off';
 
     /**
      * @var ProductQuantity[]

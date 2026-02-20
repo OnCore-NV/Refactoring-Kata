@@ -8,7 +8,7 @@ class ShoppingCart {
     // Discount description constants
     companion object {
         private const val THREE_FOR_TWO_DESCRIPTION = "3 for 2"
-        private const val PERCENT_OFF_SUFFIX = "% off"
+        private const val PERCENT_OFF_SUFFIX = " % off"
     }
 
     private val items = ArrayList<ProductQuantity>()

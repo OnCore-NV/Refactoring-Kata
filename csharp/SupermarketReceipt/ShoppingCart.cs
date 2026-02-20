@@ -7,7 +7,7 @@ namespace SupermarketReceipt
     {
         // Discount description constants
         private const string THREE_FOR_TWO_DESCRIPTION = "3 for 2";
-        private const string PERCENT_OFF_SUFFIX = "% off";
+        private const string PERCENT_OFF_SUFFIX = " % off";
 
         private readonly List<ProductQuantity> _items = new List<ProductQuantity>();
         private readonly Dictionary<Product, double> _productQuantities = new Dictionary<Product, double>();

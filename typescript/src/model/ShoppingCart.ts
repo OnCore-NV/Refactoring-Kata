@@ -9,7 +9,7 @@ import {SpecialOfferType} from "./SpecialOfferType"
 
 // Discount description constants
 const THREE_FOR_TWO_DESCRIPTION = "3 for 2";
-const PERCENT_OFF_SUFFIX = "% off";
+const PERCENT_OFF_SUFFIX = " % off";
 
 type ProductQuantities = { [productName: string]: ProductQuantity }
 export type OffersByProduct = {[productName: string]: Offer};

@@ -2,7 +2,7 @@
 
 // Discount description constants
 static const std::string THREE_FOR_TWO_DESCRIPTION = "3 for 2";
-static const std::string PERCENT_OFF_SUFFIX = "% off";
+static const std::string PERCENT_OFF_SUFFIX = " % off";
 
 void addItemQuantity(const Product& product, double quantity);
 
