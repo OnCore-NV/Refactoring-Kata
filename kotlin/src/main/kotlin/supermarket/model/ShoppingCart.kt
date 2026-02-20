@@ -5,6 +5,12 @@ import java.util.HashMap
 
 class ShoppingCart {
 
+    // Discount description constants
+    companion object {
+        private const val THREE_FOR_TWO_DESCRIPTION = "3 for 2"
+        private const val PERCENT_OFF_SUFFIX = " % off"
+    }
+
     private val items = ArrayList<ProductQuantity>()
     internal var productQuantities: MutableMap<Product, Double> = HashMap()
 
@@ -59,11 +65,11 @@ class ShoppingCart {
                 if (offer.offerType === SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
                     val discountAmount =
                         quantity * unitPrice - (numberOfXs.toDouble() * 2.0 * unitPrice + quantityAsInt % 3 * unitPrice)
-                    discount = Discount(p, "3 for 2", discountAmount)
+                    discount = Discount(p, THREE_FOR_TWO_DESCRIPTION, discountAmount)
                 }
                 if (offer.offerType === SpecialOfferType.TenPercentDiscount) {
                     discount =
-                        Discount(p, offer.argument.toString() + "% off", quantity * unitPrice * offer.argument / 100.0)
+                        Discount(p, offer.argument.toString() + PERCENT_OFF_SUFFIX, quantity * unitPrice * offer.argument / 100.0)
                 }
                 if (offer.offerType === SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
                     val discountTotal =

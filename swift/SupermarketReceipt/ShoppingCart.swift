@@ -1,5 +1,9 @@
 public class ShoppingCart {
 
+    // Discount description constants
+    private static let threeForTwoDescription = "3 for 2"
+    private static let percentOffSuffix = " % off"
+
     public var items = [ProductQuantity]()
     public var productQuantities = [Product: Double]()
 
@@ -52,10 +56,10 @@ public class ShoppingCart {
                     var right = Double(quantityAsInt % 3) * unitPrice
                     var lastPart = left + right
                     var discountAmount = ((quantity ?? 1) * unitPrice) - lastPart
-                    discount =  Discount(description: "3 for 2", discountAmount: discountAmount, product: p)
+                    discount =  Discount(description: ShoppingCart.threeForTwoDescription, discountAmount: discountAmount, product: p)
                 }
                 if offer?.offerType == SpecialOfferType.TenPercentDiscount {
-                    discount =  Discount(description: "\(offer!.argument)% off", discountAmount: (quantity ?? 1) * unitPrice * (offer?.argument ?? 1) / 100.0, product: p)
+                    discount =  Discount(description: "\(offer!.argument)\(ShoppingCart.percentOffSuffix)", discountAmount: (quantity ?? 1) * unitPrice * (offer?.argument ?? 1) / 100.0, product: p)
                 }
                 if offer?.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5 {
                     var left = (unitPrice * (quantity ?? 1))

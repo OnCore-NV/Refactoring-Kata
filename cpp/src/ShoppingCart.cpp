@@ -1,5 +1,9 @@
 #include "ShoppingCart.h"
 
+// Discount description constants
+static const std::string THREE_FOR_TWO_DESCRIPTION = "3 for 2";
+static const std::string PERCENT_OFF_SUFFIX = " % off";
+
 void addItemQuantity(const Product& product, double quantity);
 
 std::vector<ProductQuantity> ShoppingCart::getItems() const {
@@ -49,10 +53,10 @@ void ShoppingCart::handleOffers(Receipt& receipt, std::map<Product, Offer> offer
             int numberOfXs = quantityAsInt / x;
             if (offer.getOfferType() == SpecialOfferType::ThreeForTwo && quantityAsInt > 2) {
                 double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                discount = new Discount("3 for 2", -discountAmount, product);
+                discount = new Discount(THREE_FOR_TWO_DESCRIPTION, -discountAmount, product);
             }
             if (offer.getOfferType() == SpecialOfferType::TenPercentDiscount) {
-                discount = new Discount(std::to_string(offer.getArgument()) + "% off", -quantity * unitPrice * offer.getArgument() / 100.0, product);
+                discount = new Discount(std::to_string(offer.getArgument()) + PERCENT_OFF_SUFFIX, -quantity * unitPrice * offer.getArgument() / 100.0, product);
             }
             if (offer.getOfferType() == SpecialOfferType::FiveForAmount && quantityAsInt >= 5) {
                 double discountTotal = unitPrice * quantity - (offer.getArgument() * numberOfXs + quantityAsInt % 5 * unitPrice);

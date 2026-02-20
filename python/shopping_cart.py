@@ -3,6 +3,11 @@ import math
 from model_objects import ProductQuantity, SpecialOfferType, Discount
 
 
+# Discount description constants
+THREE_FOR_TWO_DESCRIPTION = "3 for 2"
+PERCENT_OFF_SUFFIX = " % off"
+
+
 class ShoppingCart:
 
     def __init__(self):
@@ -44,7 +49,7 @@ class ShoppingCart:
                     if quantity_as_int >= 2:
                         total = offer.argument * (quantity_as_int / x) + quantity_as_int % 2 * unit_price
                         discount_n = unit_price * quantity - total
-                        discount = Discount(p, "2 for " + str(offer.argument), -discount_n)
+                        discount = Discount(p, f"2 for {offer.argument}", -discount_n)
 
                 if offer.offer_type == SpecialOfferType.FIVE_FOR_AMOUNT:
                     x = 5
@@ -53,16 +58,16 @@ class ShoppingCart:
                 if offer.offer_type == SpecialOfferType.THREE_FOR_TWO and quantity_as_int > 2:
                     discount_amount = quantity * unit_price - (
                                 (number_of_x * 2 * unit_price) + quantity_as_int % 3 * unit_price)
-                    discount = Discount(p, "3 for 2", -discount_amount)
+                    discount = Discount(p, THREE_FOR_TWO_DESCRIPTION, -discount_amount)
 
                 if offer.offer_type == SpecialOfferType.TEN_PERCENT_DISCOUNT:
-                    discount = Discount(p, str(offer.argument) + "% off",
+                    discount = Discount(p, f"{offer.argument}{PERCENT_OFF_SUFFIX}",
                                         -quantity * unit_price * offer.argument / 100.0)
 
                 if offer.offer_type == SpecialOfferType.FIVE_FOR_AMOUNT and quantity_as_int >= 5:
                     discount_total = unit_price * quantity - (
                                 offer.argument * number_of_x + quantity_as_int % 5 * unit_price)
-                    discount = Discount(p, str(x) + " for " + str(offer.argument), -discount_total)
+                    discount = Discount(p, f"{x} for {offer.argument}", -discount_total)
 
                 if discount:
                     receipt.add_discount(discount)

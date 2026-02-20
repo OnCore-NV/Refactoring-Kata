@@ -5,6 +5,12 @@ import (
 	"math"
 )
 
+// Discount description constants
+const (
+	threeForTwoDescription = "3 for 2"
+	percentOffSuffix       = " % off"
+)
+
 type ProductQuantity struct {
 	product Product
 	quantity float64
@@ -62,10 +68,10 @@ func (c *ShoppingCart) handleOffers(receipt *Receipt, offers map[Product]Special
 			var numberOfXs int = quantityAsInt / x;
 			if offer.offerType == ThreeForTwo && quantityAsInt > 2 {
 				var discountAmount = quantity * unitPrice - (float64(numberOfXs * 2) * unitPrice + float64(quantityAsInt % 3) * unitPrice)
-				discount = &Discount{product: p, description: "3 for 2", discountAmount: -discountAmount}
+				discount = &Discount{product: p, description: threeForTwoDescription, discountAmount: -discountAmount}
 			}
 			if offer.offerType == TenPercentDiscount {
-				discount = &Discount{product: p, description: fmt.Sprintf("%.0f %% off", offer.argument), discountAmount: -quantity * unitPrice * offer.argument / 100.0}
+				discount = &Discount{product: p, description: fmt.Sprintf("%.0f%s", offer.argument, percentOffSuffix), discountAmount: -quantity * unitPrice * offer.argument / 100.0}
 			}
 			if offer.offerType == FiveForAmount && quantityAsInt >= 5 {
 				var discountTotal = unitPrice * quantity - (offer.argument * float64(numberOfXs) + float64(quantityAsInt % 5) * unitPrice)

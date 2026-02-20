@@ -8,6 +8,10 @@ use Ds\Map;
 
 class ShoppingCart
 {
+    // Discount description constants
+    private const THREE_FOR_TWO_DESCRIPTION = '3 for 2';
+    private const PERCENT_OFF_SUFFIX = ' % off';
+
     /**
      * @var ProductQuantity[]
      */
@@ -81,13 +85,13 @@ class ShoppingCart
                 $numberOfXs = intdiv($quantityAsInt, $x);
                 if ($offer->getOfferType()->equals(SpecialOfferType::THREE_FOR_TWO()) && $quantityAsInt > 2) {
                     $discountAmount = $quantity * $unitPrice - ($numberOfXs * 2 * $unitPrice + $quantityAsInt % 3 * $unitPrice);
-                    $discount = new Discount($p, '3 for 2', -$discountAmount);
+                    $discount = new Discount($p, self::THREE_FOR_TWO_DESCRIPTION, -$discountAmount);
                 }
 
                 if ($offer->getOfferType()->equals(SpecialOfferType::TEN_PERCENT_DISCOUNT())) {
                     $discount = new Discount(
                         $p,
-                        "{$offer->getArgument()}% off",
+                        "{$offer->getArgument()}" . self::PERCENT_OFF_SUFFIX,
                         -$quantity * $unitPrice * $offer->getArgument() / 100.0
                     );
                 }

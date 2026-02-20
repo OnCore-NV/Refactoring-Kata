@@ -7,6 +7,10 @@ import {Receipt} from "./Receipt"
 import {Offer} from "./Offer"
 import {SpecialOfferType} from "./SpecialOfferType"
 
+// Discount description constants
+const THREE_FOR_TWO_DESCRIPTION = "3 for 2";
+const PERCENT_OFF_SUFFIX = " % off";
+
 type ProductQuantities = { [productName: string]: ProductQuantity }
 export type OffersByProduct = {[productName: string]: Offer};
 
@@ -73,10 +77,10 @@ export class ShoppingCart {
                 const numberOfXs = Math.floor(quantityAsInt / x);
                 if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
                     const discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                    discount = new Discount(product, "3 for 2", discountAmount);
+                    discount = new Discount(product, THREE_FOR_TWO_DESCRIPTION, discountAmount);
                 }
                 if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
-                    discount = new Discount(product, offer.argument + "% off", quantity * unitPrice * offer.argument / 100.0);
+                    discount = new Discount(product, offer.argument + PERCENT_OFF_SUFFIX, quantity * unitPrice * offer.argument / 100.0);
                 }
                 if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
                     const discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);

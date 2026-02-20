@@ -2,6 +2,10 @@
 
 (in-package :supermarket-receipt)
 
+;; Discount description constants
+(defconstant +three-for-two-description+ "3 for 2")
+(defconstant +percent-off-suffix+ " % off")
+
 (defclass shopping-cart ()
         ((items :initform nil
                 :type list
@@ -56,12 +60,12 @@
                                                      (* (mod floored-quantity 3) a-unit-price)))))
                           (setf a-discount (make-instance 'discount
                                                           :product a-product
-                                                          :description "3 for 2"
+                                                          :description +three-for-two-description+
                                                           :amount (- discount-amount)))))
                       (when (eq the-offer-type 'ten-percent-discount)
                         (setf a-discount (make-instance 'discount
                                                         :product a-product
-                                                        :description (format nil "~S % off" (offer-argument offer-for-product))
+                                                        :description (format nil "~A~A" (offer-argument offer-for-product) +percent-off-suffix+)
                                                         :amount (/ (* (- a-quantity) a-unit-price (offer-argument offer-for-product)) 100.0))))
                       (when (and (eq the-offer-type 'five-for-amount)
                                  (>= floored-quantity 5))

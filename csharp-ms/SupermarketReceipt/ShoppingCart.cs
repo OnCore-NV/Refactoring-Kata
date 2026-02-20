@@ -4,6 +4,10 @@ namespace SupermarketReceipt
 {
     public class ShoppingCart
     {
+        // Discount description constants
+        private const string THREE_FOR_TWO_DESCRIPTION = "3 for 2";
+        private const string PERCENT_OFF_SUFFIX = " % off";
+
         private readonly List<ProductQuantity> _items = new List<ProductQuantity>();
         private readonly Dictionary<Product, double> _productQuantities = new Dictionary<Product, double>();
 
@@ -65,10 +69,10 @@ namespace SupermarketReceipt
                     if (offer.OfferType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2)
                     {
                         var discountAmount = quantity * unitPrice - (numberOfXs * 2 * unitPrice + quantityAsInt % 3 * unitPrice);
-                        discount = new Discount(p, "3 for 2", -discountAmount);
+                        discount = new Discount(p, THREE_FOR_TWO_DESCRIPTION, -discountAmount);
                     }
 
-                    if (offer.OfferType == SpecialOfferType.TenPercentDiscount) discount = new Discount(p, offer.Argument + "% off", -quantity * unitPrice * offer.Argument / 100.0);
+                    if (offer.OfferType == SpecialOfferType.TenPercentDiscount) discount = new Discount(p, offer.Argument + PERCENT_OFF_SUFFIX, -quantity * unitPrice * offer.Argument / 100.0);
                     if (offer.OfferType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5)
                     {
                         var discountTotal = unitPrice * quantity - (offer.Argument * numberOfXs + quantityAsInt % 5 * unitPrice);
