@@ -8,6 +8,10 @@ import java.util.Map;
 
 public class ShoppingCart {
 
+    // Discount description constants
+    private static final String THREE_FOR_TWO_DESCRIPTION = "3 for 2";
+    private static final String PERCENT_OFF_SUFFIX = "% off";
+
     private final List<ProductQuantity> items = new ArrayList<>();
     private final Map<Product, Double> productQuantities = new HashMap<>();
 
@@ -58,10 +62,10 @@ public class ShoppingCart {
                 int numberOfXs = quantityAsInt / x;
                 if (offer.offerType == SpecialOfferType.THREE_FOR_TWO && quantityAsInt > 2) {
                     double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                    discount = new Discount(p, "3 for 2", -discountAmount);
+                    discount = new Discount(p, THREE_FOR_TWO_DESCRIPTION, -discountAmount);
                 }
                 if (offer.offerType == SpecialOfferType.TEN_PERCENT_DISCOUNT) {
-                    discount = new Discount(p, offer.argument + "% off", -quantity * unitPrice * offer.argument / 100.0);
+                    discount = new Discount(p, offer.argument + PERCENT_OFF_SUFFIX, -quantity * unitPrice * offer.argument / 100.0);
                 }
                 if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT && quantityAsInt >= 5) {
                     double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
