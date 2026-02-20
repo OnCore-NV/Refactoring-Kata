@@ -65,7 +65,7 @@
                       (when (eq the-offer-type 'ten-percent-discount)
                         (setf a-discount (make-instance 'discount
                                                         :product a-product
-                                                        :description (format nil "~S ~A" (offer-argument offer-for-product) +percent-off-suffix+)
+                                                        :description (format nil "~A ~A" (offer-argument offer-for-product) +percent-off-suffix+)
                                                         :amount (/ (* (- a-quantity) a-unit-price (offer-argument offer-for-product)) 100.0))))
                       (when (and (eq the-offer-type 'five-for-amount)
                                  (>= floored-quantity 5))
